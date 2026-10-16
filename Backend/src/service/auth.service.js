@@ -27,6 +27,21 @@ class Authservice {
 
     return createdUser;
   }
+
+  async generateAccessAndRefreshToken({userId}){
+    try {
+      const user = await User.findByID(userId) 
+      const accessToken = user.generateAccessToken()
+      const refreshToken = user.generateRefreshToken()
+      
+      user.refreshToken = refreshToken
+      await user.save({ValiditeBeforeSave:false})
+
+      return {accessToken,refreshToken}
+    } catch (error) {
+      throw new ApiError(500, "Something went wrong while genrating Tokens")
+    }
+  }
 }
 
 
